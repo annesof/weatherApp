@@ -1,26 +1,28 @@
 "use client";
 import { getDailyForecastData } from "@/actions/getDailyForecastData";
 import { getGeocodingData } from "@/actions/getGeocodingData";
-import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
 
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 import { IconWeather, iconTypes } from "@/components/IconWeather";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import {
-  formatTimestampToDay,
+  formatTimestampToDate,
   formatTimestampToHour,
 } from "@/utils/date-utils";
 import { capitalizeFirstLetter } from "@/utils/string-utils";
 import { CloudIcon, HumidityIcon, RainIcon } from "hugeicons-react";
+import { Autocomplete } from "./Autocomplete";
 import { CurrentMeteo } from "./CurrentMeteo";
-import { SearchIcon } from "./SearchIcon";
+import { ForecastsBar } from "./ForecastsBar";
+import { LocationHeader } from "./LocationHeader";
 import { SimpleWidget } from "./SimpleWidget";
 
 interface Feature {
   geometry: {
     type: string;
-    coordinates: string[];
+    coordinates: number[];
   };
   properties: {
     id: string;
@@ -85,20 +87,31 @@ interface WeatherDisplay {
 
 export const DashboardContainer = () => {
   const [text, setText] = useState<string>();
-  const [results, setResults] = useState<Feature[]>([]);
+  const [geolocalisations, setGeolocalisations] = useState<Feature[]>([]);
   const [value] = useDebounce(text, 500);
   const [selectedKey, setSelectedKey] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingWeather, setIsLoadingWeather] = useState(false);
   const [dailyData, setDailyData] = useState<WeatherDisplay>();
-  const [selectedLocation, setSelectedLocation] = useState<Feature>();
+  const [selectedLocation, setSelectedLocation] = useState<{
+    name?: string;
+    lon: string;
+    lat: string;
+  }>();
   const [currentData, setCurrentData] = useState<DailyData>();
+  const [first, setfirst] = useState(true);
+  const { location } = useGeolocation();
+
+  if (location && first) {
+    setSelectedLocation(location);
+    setfirst(false);
+  }
 
   useEffect(() => {
     async function fetchData(text: string) {
       setIsLoading(true);
       const result = await getGeocodingData({ text });
-      setResults(result.features);
+      setGeolocalisations(result.features);
       setIsLoading(false);
     }
 
@@ -109,115 +122,84 @@ export const DashboardContainer = () => {
 
   const onSelectionChange = useCallback(
     (id: any) => {
-      async function fetchData({ lat, lon }: { lat: string; lon: string }) {
-        const result: WeatherResponse = await getDailyForecastData({
-          lat,
-          lon,
-        });
-
-        const test: { [day: string]: DailyData[] } = result.list.reduce<{
-          [day: string]: DailyData[];
-        }>((acc, data) => {
-          const unixTime = data.dt + result.city.timezone;
-          const timestamp = unixTime * 1000;
-          const dayOfWeek: string = formatTimestampToDay(timestamp);
-          const dataFormatted = { ...data, dt: timestamp };
-          if (!acc[dayOfWeek]) {
-            acc[dayOfWeek] = [];
-          }
-          acc[dayOfWeek].push(dataFormatted);
-          return acc;
-        }, {});
-        const display: WeatherDisplay = { ...result, list: test };
-        //result.list = test;
-        setDailyData(display);
-        setCurrentData(display.list[Object.keys(display.list)[0]][0]);
-      }
-      const selectedLocation = results.find(
+      const chosenLocation = geolocalisations.find(
         (item) => item.properties.id === id
       );
       setDailyData(undefined);
       setCurrentData(undefined);
-      setSelectedLocation(selectedLocation);
-      if (selectedLocation) {
-        setIsLoadingWeather(true);
 
-        fetchData({
-          lon: selectedLocation?.geometry.coordinates[0],
-          lat: selectedLocation?.geometry.coordinates[1],
-        });
-        setIsLoadingWeather(false);
+      if (chosenLocation) {
+        const locationCoordinates = {
+          lon: `${chosenLocation?.geometry.coordinates[0]}`,
+          lat: `${chosenLocation?.geometry.coordinates[1]}`,
+          name: chosenLocation.properties.label,
+        };
+
+        setSelectedLocation(locationCoordinates);
       }
       setSelectedKey(id);
     },
-    [results, dailyData]
+    [geolocalisations]
   );
+
+  useEffect(() => {
+    async function fetchWeatherForecast({
+      lat,
+      lon,
+    }: {
+      lat: string;
+      lon: string;
+    }) {
+      const result: WeatherResponse = await getDailyForecastData({
+        lat,
+        lon,
+      });
+
+      const test: { [day: string]: DailyData[] } = result.list.reduce<{
+        [day: string]: DailyData[];
+      }>((acc, data) => {
+        const unixTime = data.dt + result.city.timezone;
+        const timestamp = unixTime * 1000;
+        const dayOfWeek: string = formatTimestampToDate(timestamp);
+        const dataFormatted = { ...data, dt: timestamp };
+        if (!acc[dayOfWeek]) {
+          acc[dayOfWeek] = [];
+        }
+        acc[dayOfWeek].push(dataFormatted);
+        return acc;
+      }, {});
+      const display: WeatherDisplay = { ...result, list: test };
+      //result.list = test;
+      setDailyData(display);
+      setCurrentData(display.list[Object.keys(display.list)[0]][0]);
+    }
+    if (selectedLocation?.lat && selectedLocation?.lon) {
+      fetchWeatherForecast(selectedLocation);
+    }
+  }, [selectedLocation]);
 
   return (
     <>
       <div className="inline-block text-center justify-center">
         <Autocomplete
-          items={results}
-          isLoading={isLoading}
+          items={geolocalisations.map((item) => ({
+            id: item.properties.id,
+            label: item.properties.label,
+          }))}
+          emptyContent="Aucune localisation trouvée"
           placeholder="Tapez une localisation"
-          className="w-[500px]"
-          autoFocus={true}
-          aria-label="Tapez une localisation"
-          listboxProps={{
-            emptyContent: "Aucune localisation trouvée",
-          }}
-          allowsEmptyCollection={true}
+          isLoading={isLoading}
           onSelectionChange={onSelectionChange}
-          menuTrigger="input"
-          startContent={
-            <SearchIcon
-              className="text-default-400"
-              strokeWidth={2.5}
-              size={20}
-            />
-          }
-          inputProps={{
-            classNames: {
-              input: [
-                "bg-transparent",
-                "text-black/90 dark:text-white/90",
-                "placeholder:text-default-700/50 dark:placeholder:text-white/60",
-              ],
-              innerWrapper: "bg-transparent",
-              inputWrapper: [
-                "shadow-xl",
-                "bg-default-200/50",
-                "dark:bg-default/60",
-                "backdrop-blur-xl",
-                "backdrop-saturate-200",
-                "hover:bg-default-200/70",
-                "dark:hover:bg-default/70",
-                "group-data-[focused=true]:bg-default-200/50",
-                "dark:group-data-[focused=true]:bg-default/60",
-                "!cursor-text",
-              ],
-            },
-          }}
-          onKeyDown={(e: any) => e.continuePropagation()}
-          onInputChange={(event) => {
-            if (event !== selectedLocation?.properties.label) {
-              //setSelectedLocation(undefined);
-            }
-            return setText(event);
-          }}
-        >
-          {(location) => (
-            <AutocompleteItem key={location.properties.id}>
-              {location.properties.label}
-            </AutocompleteItem>
-          )}
-        </Autocomplete>
+          onInputChange={(event) => setText(event)}
+        />
       </div>
+      <LocationHeader name={selectedLocation?.name} />
+      <ForecastsBar />
       <div className="w-full pt-10 flex gap-3">
         <div className="w-1/2">
           {currentData && (
             <CurrentMeteo
-              location={selectedLocation?.properties.label}
+              location={selectedLocation?.name}
               currentData={currentData}
             />
           )}

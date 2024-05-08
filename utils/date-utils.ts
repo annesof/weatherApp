@@ -1,4 +1,4 @@
-export const formatTimestampToDate = (timestamp: number) => {
+export const formatTimestampToDateWithHours = (timestamp: number) => {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     month: "long",
@@ -13,7 +13,7 @@ export const formatTimestampToDate = (timestamp: number) => {
   return dateTimeFormat.format(date);
 };
 
-export const formatTimestampToDay = (timestamp: number) => {
+export const formatTimestampToDate = (timestamp: number) => {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     day: "numeric",

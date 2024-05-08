@@ -1,6 +1,6 @@
 import { IconWeather, iconTypes } from "@/components/IconWeather";
 import { title } from "@/components/primitives";
-import { formatTimestampToDate } from "@/utils/date-utils";
+import { formatTimestampToDateWithHours } from "@/utils/date-utils";
 import { capitalizeFirstLetter } from "@/utils/string-utils";
 import { DailyData } from "./DashboardContainer";
 
@@ -32,7 +32,9 @@ export const CurrentMeteo = ({
             <div className="w-2/3   flex flex-col">
               <div className="text-right text-2xl font-bold">{location}</div>
               <div className="text-right text-xl">
-                {capitalizeFirstLetter(formatTimestampToDate(currentData.dt))}
+                {capitalizeFirstLetter(
+                  formatTimestampToDateWithHours(currentData.dt)
+                )}
               </div>
             </div>
           </div>
