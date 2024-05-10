@@ -16,10 +16,11 @@ import Icon13d from "@/icons/animated/13d.svg";
 import Icon13n from "@/icons/animated/13n.svg";
 import Icon50d from "@/icons/animated/50d.svg";
 import Icon50n from "@/icons/animated/50n.svg";
-import { FC } from "react";
+import { SVGProps } from "react";
 
-interface IconProps extends React.SVGProps<SVGSVGElement> {
-  name: keyof typeof iconTypes;
+type IconKey = keyof typeof iconTypes;
+interface IconProps extends SVGProps<SVGSVGElement> {
+  name: IconKey;
 }
 
 export const iconTypes = {
@@ -43,7 +44,7 @@ export const iconTypes = {
   icon50n: Icon50n,
 };
 
-export const IconWeather: FC<IconProps> = ({ name, ...props }) => {
-  let Icon = iconTypes[name];
-  return <Icon {...props} />;
+export const IconWeather = ({ name, ...props }: IconProps) => {
+  let Icon = name && iconTypes[name];
+  return Icon ? <Icon {...props} /> : <></>;
 };

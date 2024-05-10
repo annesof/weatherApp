@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const lat = searchParams.get("lat");
@@ -6,16 +8,15 @@ export async function GET(request: Request) {
   const appid = process.env.NEXT_PUBLIC_OPEN_WEATHER_API_KEY;
 
   if (!appid) {
-    return Response.json(
+    return NextResponse.json(
       { message: "OpenWeather API key not found in environment variables" },
       { status: 401 }
     );
   }
 
   if (!lat || !lon) {
-    return Response.json({ message: "Missing lat param" }, { status: 400 });
+    return NextResponse.json({ message: "Missing lat param" }, { status: 400 });
   }
-  console.log("===============&================");
 
   const res = await fetch(
     `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${appid}&lang=fr`,
@@ -29,7 +30,6 @@ export async function GET(request: Request) {
   }
 
   const data = await res.json();
-  console.log(data);
 
-  return Response.json(data);
+  return NextResponse.json(data);
 }

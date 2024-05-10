@@ -1,3 +1,6 @@
+import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const text = searchParams.get("text");
@@ -15,7 +18,6 @@ export async function GET(request: Request) {
   }
 
   const data = await res.json();
-  console.log(data);
 
-  return Response.json(data);
+  return NextResponse.json(data);
 }

@@ -1,6 +1,7 @@
 import {
   formatTimestampToDateWithHours,
   formatTimestampToDate,
+  formatTimestampToHour,
 } from "./date-utils";
 import { describe, it, expect } from "@jest/globals";
 
@@ -15,5 +16,11 @@ describe("format timestamp ", () => {
     const timestamp = Date.UTC(2023, 11, 15, 15, 30, 0);
     const formattedDate = formatTimestampToDate(timestamp);
     expect(formattedDate).toBe("vendredi 15 décembre");
+  });
+
+  it("au format 06:35", () => {
+    const timestamp = Date.UTC(2023, 11, 15, 15, 30, 0);
+    const formattedDate = formatTimestampToHour(timestamp);
+    expect(formattedDate).toBe("15:30");
   });
 });

@@ -5,19 +5,12 @@ import { getGeocodingData } from "@/actions/getGeocodingData";
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
-import { IconWeather, iconTypes } from "@/components/IconWeather";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import {
-  formatTimestampToDate,
-  formatTimestampToHour,
-} from "@/utils/date-utils";
-import { capitalizeFirstLetter } from "@/utils/string-utils";
-import { CloudIcon, HumidityIcon, RainIcon } from "hugeicons-react";
+import { formatTimestampToDate } from "@/utils/date-utils";
+import { Tab, Tabs } from "@nextui-org/react";
 import { Autocomplete } from "./Autocomplete";
-import { CurrentMeteo } from "./CurrentMeteo";
-import { ForecastsBar } from "./ForecastsBar";
+import { DayTab } from "./DayTab";
 import { LocationHeader } from "./LocationHeader";
-import { SimpleWidget } from "./SimpleWidget";
 
 interface Feature {
   geometry: {
@@ -63,6 +56,7 @@ export interface DailyData {
   snow: {
     "3h": number;
   };
+  visibility: number;
 }
 
 interface WeatherResponse {
@@ -155,7 +149,7 @@ export const DashboardContainer = () => {
         lon,
       });
 
-      const test: { [day: string]: DailyData[] } = result.list.reduce<{
+      const forecasts: { [day: string]: DailyData[] } = result.list.reduce<{
         [day: string]: DailyData[];
       }>((acc, data) => {
         const unixTime = data.dt + result.city.timezone;
@@ -168,8 +162,7 @@ export const DashboardContainer = () => {
         acc[dayOfWeek].push(dataFormatted);
         return acc;
       }, {});
-      const display: WeatherDisplay = { ...result, list: test };
-      //result.list = test;
+      const display: WeatherDisplay = { ...result, list: forecasts };
       setDailyData(display);
       setCurrentData(display.list[Object.keys(display.list)[0]][0]);
     }
@@ -193,68 +186,59 @@ export const DashboardContainer = () => {
           onInputChange={(event) => setText(event)}
         />
       </div>
-      <LocationHeader name={selectedLocation?.name} />
-      <ForecastsBar />
-      <div className="w-full pt-10 flex gap-3">
-        <div className="w-1/2">
-          {currentData && (
-            <CurrentMeteo
-              location={selectedLocation?.name}
-              currentData={currentData}
-            />
-          )}
-        </div>
-        <div className="w-1/6">
-          {currentData && (
-            <SimpleWidget
-              title="Humidité"
-              number={currentData?.main.humidity}
-              Icon={HumidityIcon}
-            />
-          )}
-        </div>
-        <div className="w-1/6">
-          {currentData && (
-            <SimpleWidget
-              title="Nébulosité"
-              number={currentData?.clouds.all}
-              Icon={CloudIcon}
-            />
-          )}
-        </div>
-        <div className="w-1/6">
-          {currentData && (
-            <SimpleWidget
-              title="Précipitations"
-              number={Math.round(currentData?.pop * 100)}
-              Icon={RainIcon}
-              subtitle="(Risques)"
-            />
-          )}
-        </div>
-      </div>
-      <div className="w-full pt">
-        {dailyData &&
-          Object.keys(dailyData?.list).map((key: string) => (
-            <div key={key}>
-              <h2 className="text-3xl">{capitalizeFirstLetter(key)}</h2>
-              {/* Afficher la clé (jour de la semaine) */}
-              <div className="flex gap-14">
-                {dailyData?.list[key].map((data: DailyData, index: number) => {
-                  const icon =
-                    `icon${data?.weather[0].icon}` as keyof typeof iconTypes;
-                  return (
-                    <div key={index} className="flex gap-2 ">
-                      <IconWeather name={icon} className="w-20" />
-                      <div>{Math.round(data.main.temp)}°C</div>
-                      <div>{formatTimestampToHour(data.dt)}</div>
-                    </div>
-                  );
-                })}
+
+      {dailyData && (
+        <>
+          <LocationHeader
+            name={selectedLocation?.name}
+            timezone={dailyData.city.timezone}
+          />
+
+          <Tabs
+            variant={"light"}
+            radius={"full"}
+            classNames={{
+              tabList: "gap-2 w-full relative rounded-none p-0  border-divider",
+              cursor:
+                "w-full bg-blue-500 text-[#FFFFFF] group-data-[selected=true]:bg-[#FFFFFF]",
+              tab: "max-w-fit px-2 md:px-5 h-8 md:h-12",
+              panel: "w-full",
+              tabContent:
+                "group-data-[selected=true]:text-[#000000]  text-l md:text-xl text-[#FFFFFF]",
+            }}
+            aria-label="Tabs variants"
+          >
+            <Tab key="today" title="Aujourd'hui">
+              {dailyData && (
+                <DayTab
+                  data={dailyData.list[Object.keys(dailyData.list)[0]]}
+                  current
+                  sunData={{
+                    sunrise:
+                      (dailyData.city.sunrise + dailyData.city.timezone) * 1000,
+                    sunset:
+                      (dailyData.city.sunset + dailyData.city.timezone) * 1000,
+                    timezone: dailyData.city.timezone,
+                  }}
+                />
+              )}
+            </Tab>
+            <Tab key="tomorrow" title="Demain">
+              {dailyData && (
+                <DayTab data={dailyData.list[Object.keys(dailyData.list)[1]]} />
+              )}
+            </Tab>
+            <Tab key="5days" title="Prévisions 5 jours">
+              <div className="flex flex-col gap-4">
+                {dailyData &&
+                  Object.keys(dailyData?.list).map((key: string) => (
+                    <DayTab key={key} data={dailyData.list[key]} />
+                  ))}
               </div>
-            </div>
-          ))}
-      </div>
+            </Tab>
+          </Tabs>
+        </>
+      )}
     </>
   );
 };
