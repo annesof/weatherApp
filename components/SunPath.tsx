@@ -1,3 +1,4 @@
+"use client";
 import { formatTimestampToHour } from "@/utils/date-utils";
 
 interface SunPathProps {
@@ -10,9 +11,9 @@ const SunPath: React.FC<SunPathProps> = ({ sunrise, sunset, currentDate }) => {
   const sunriseDate = new Date(sunrise);
   const sunsetDate = new Date(sunset);
   const current = new Date(currentDate);
+
   const amplitude = sunsetDate.getUTCHours() - sunriseDate.getUTCHours();
 
-  //console.log(currentDate);
   const radius = 50;
   const startAngle = -90; // Angle de début (en degrés)
   const endAngle = 90; // Angle de fin (en degrés)
@@ -27,9 +28,8 @@ const SunPath: React.FC<SunPathProps> = ({ sunrise, sunset, currentDate }) => {
   const x2 = radius * Math.cos(endAngleRad);
   const y2 = radius * Math.sin(endAngleRad);
   const isLargeArc = endAngle - startAngle <= 180 ? 0 : 1;
-  //const currentHour =
   const theta: number =
-    ((current.getHours() - sunriseDate.getUTCHours()) / amplitude) * 180;
+    ((current.getUTCHours() - sunriseDate.getUTCHours()) / amplitude) * 180;
   const x = -radius * Math.cos((theta * Math.PI) / 180);
   const y = -radius * Math.sin((theta * Math.PI) / 180);
 

@@ -1,18 +1,10 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");
-
-  const appid = process.env.NEXT_PUBLIC_OPEN_WEATHER_API_KEY;
-
-  if (!appid) {
-    return NextResponse.json(
-      { message: "OpenWeather API key not found in environment variables" },
-      { status: 401 }
-    );
-  }
 
   if (!lat || !lon) {
     return NextResponse.json(
@@ -22,10 +14,7 @@ export async function GET(request: Request) {
   }
 
   const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${appid}&lang=fr`,
-    {
-      next: { revalidate: 900 },
-    }
+    `http://pelias.smappen.com:4000/v1/reverse?size=1&point.lat=${lat}&point.lon=${lon}`
   );
 
   if (!res.ok) {

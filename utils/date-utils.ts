@@ -28,7 +28,7 @@ export const formatTimestampToDate = (timestamp: number) => {
 
 export const formatTimestampToHour = (timestamp: number) => {
   const options: Intl.DateTimeFormatOptions = {
-    hour: "numeric",
+    hour: "2-digit",
     minute: "2-digit",
     timeZone: "UTC",
   };

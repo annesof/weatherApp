@@ -4,9 +4,15 @@ import {
   formatTimestampToHour,
 } from "@/utils/date-utils";
 import { capitalizeFirstLetter } from "@/utils/string-utils";
-import { ArrowDown02Icon, TemperatureIcon } from "hugeicons-react";
+import {
+  ArrowDown02Icon,
+  DropletIcon,
+  FastWindIcon,
+  TemperatureIcon,
+} from "hugeicons-react";
+import SunPath from "../../../components/SunPath";
+import { CurrentWeather } from "./CurrentWeather";
 import { DailyData } from "./DashboardContainer";
-import SunPath from "./SunPath";
 
 interface DayTabProps {
   data: DailyData[];
@@ -15,16 +21,15 @@ interface DayTabProps {
 }
 
 export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
-  const icon = `icon${data[0].weather[0].icon}` as keyof typeof iconTypes;
   const calculateHeight = (temp: number | undefined): string => {
     if (temp === undefined) return "0"; // Si la température n'est pas définie, la hauteur est de 0
     return `${temp * 5}px`; // Multipliez par un facteur pour ajuster la hauteur à votre convenance
   };
 
   return (
-    <div className="bg-[#2B93F3] rounded-2xl w-full p-4 md:p-10">
+    <div className="bg-[#2B93F3] rounded-2xl w-full p-4 md:p-8">
       <div className="flex w-full justify-start gap-20">
-        <div className="text-2xl md:text-4xl font-bold content-center">
+        <div className="text-xl md:text-2xl font-bold content-center">
           {capitalizeFirstLetter(formatTimestampToDate(data[0].dt))}
         </div>
         {sunData && (
@@ -37,67 +42,11 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
           </div>
         )}
       </div>
-      {current && (
-        <div className="w-full inline-grid grid-cols-2  md:grid-cols-6 justify-start gap-5 md:gap-16 items-center pt-3 ">
-          <div className="flex flex-col items-center">
-            <IconWeather name={icon} className="w-20 md:w-40" />
-            <div className=" md-l md:text-lg">
-              {data[0].weather[0].description}
-            </div>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="flex text-4xl md:text-8xl font-semibold">
-              {Math.round(data[0]?.main.temp)}
-              <span className=" text-2xl md:text-4xl font-bold pt-2 md:pt-3">
-                °C
-              </span>
-            </div>
-            <div>Ressenti {Math.round(data[0].main.feels_like)} °C</div>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xl md:text-2xl font-medium">Humidité</span>
-            <div className="flex gap-1">
-              <span className="text-2xl md:text-5xl">
-                {Math.round(data[0]?.main.humidity)}
-              </span>
-              <span className="text-base md:text-2xl pt-2 md:pt-5">%</span>
-            </div>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xl md:text-2xl font-medium">Nébulosité</span>
-            <div className="flex gap-1">
-              <span className="text-2xl md:text-5xl">
-                {Math.round(data[0]?.clouds.all)}
-              </span>
-              <span className="text-base md:text-2xl pt-2 md:pt-5">%</span>
-            </div>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xl md:text-2xl font-medium">
-              Précipitations
-            </span>
-            <div className="flex gap-1">
-              <span className="text-2xl md:text-5xl">
-                {Math.round(data[0]?.pop * 100)}
-              </span>
-              <span className="text-base md:text-2xl pt-2 md:pt-5">%</span>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1 items-center">
-            <span className="text-xl md:text-2xl font-medium">Visibilité</span>
-            <div className="flex gap-1">
-              <span className="text-2xl md:text-5xl">
-                {Math.round(data[0]?.visibility / 1000)}
-              </span>
-              <span className="text-base md:text-2xl pt-2 md:pt-5">km</span>
-            </div>
-          </div>
-        </div>
-      )}
+      {current && <CurrentWeather dayData={data[0]} />}
       <div className="hidden md:block">
-        <div className="flex flex-col mt-6 ">
-          <div className="text-3xl pb-4 flex items-center">
-            <TemperatureIcon strokeWidth={1.5} size={30} />
+        <div className="flex flex-col mt-2 ">
+          <div className="text-l pb-2 flex items-center">
+            <TemperatureIcon strokeWidth={1.5} size={20} />
             Températures
           </div>
           <div className="flex gap-5">
@@ -109,11 +58,11 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
                   key={index}
                   className="flex flex-col items-center rounded-2xl p-1 bg-[#172554]/30"
                 >
-                  <div className="font-semibold text-xl">
+                  <div className="font-semibold text-l">
                     {formatTimestampToHour(daily.dt)}
                   </div>
-                  <IconWeather name={icon} className="w-20" />
-                  <div className="font-semibold text-xl">
+                  <IconWeather name={icon} className="w-16" />
+                  <div className="font-semibold text-l">
                     {Math.round(daily.main.temp)}°
                   </div>
                 </div>
@@ -121,8 +70,11 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
             })}
           </div>
         </div>
-        <div className="flex flex-col mt-6">
-          <div className="text-3xl pb-4">Précipitations</div>
+        <div className="flex flex-col mt-2">
+          <div className="text-l pb-2 flex items-center">
+            <DropletIcon strokeWidth={1.5} size={20} />
+            Précipitations
+          </div>
           <div className="flex gap-5">
             {data.map((daily: DailyData, index: number) => {
               const rain =
@@ -130,9 +82,9 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
               return (
                 <div
                   key={index}
-                  className="flex flex-col items-center justify-between rounded-2xl p-1 bg-[#172554]/30 min-w-[88px] min-h-36"
+                  className="flex flex-col items-center justify-between rounded-2xl p-1 bg-[#172554]/30 min-w-[72px] min-h-32"
                 >
-                  <div className="font-semibold text-xl">
+                  <div className="font-semibold text-l">
                     {formatTimestampToHour(daily.dt)}
                   </div>
                   <div className="flex-grow  content-end">
@@ -147,25 +99,28 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
             })}
           </div>
         </div>
-        <div className="flex flex-col mt-6">
-          <div className="text-3xl pb-4">Vent</div>
+        <div className="flex flex-col mt-2">
+          <div className="text-l pb-2 flex items-center">
+            <FastWindIcon strokeWidth={1.5} size={20} />
+            Vent
+          </div>
           <div className="flex gap-5">
             {data.map((daily: DailyData, index: number) => {
               const deg = { transform: `rotate(${daily.wind.deg}deg)` };
               return (
                 <div
                   key={index}
-                  className="flex flex-col items-center justify-between rounded-2xl p-1 bg-[#172554]/30 min-w-[88px] min-h-36"
+                  className="flex flex-col items-center justify-between rounded-2xl p-1 bg-[#172554]/30 min-w-[72px] min-h-28"
                 >
-                  <div className="font-semibold text-xl">
+                  <div className="font-semibold text-l">
                     {formatTimestampToHour(daily.dt)}
                   </div>
                   <div className="flex-grow  content-center">
                     <div style={deg}>
-                      <ArrowDown02Icon strokeWidth={2.5} size={30} />
+                      <ArrowDown02Icon strokeWidth={2} size={30} />
                     </div>
                   </div>
-                  <div className="font-semibold text-xl">
+                  <div className="font-semibold text-l">
                     {Math.round(daily.wind.speed * 3.6)}km/h
                   </div>
                 </div>
@@ -174,14 +129,16 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
           </div>
         </div>
       </div>
-      <div className="table w-full md:hidden mt-6">
+      <div className="table w-full md:hidden mt-6 ">
         <div className="table-header-group ">
-          <div className="table-row">
-            <div className="table-cell font-semibold text-left ">Heure</div>
+          <div className="table-row bg-sky-900">
+            <div className="table-cell font-semibold text-left pl-1">Heure</div>
             <div className="table-cell font-semibold text-center "></div>
-            <div className="table-cell font-semibold text-left ">Temp</div>
-            <div className="table-cell font-semibold text-left ">Pluie</div>
-            <div className="table-cell font-semibold text-center">Vent</div>
+            <div className="table-cell font-semibold text-left pl-1">Temp</div>
+            <div className="table-cell font-semibold text-left pl-1">Pluie</div>
+            <div className="table-cell font-semibold text-center pl-1">
+              Vent
+            </div>
           </div>
         </div>
         <div className="table-row-group ">
@@ -192,19 +149,18 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
               (daily?.rain && Math.round(daily?.rain["3h"] * 10) / 10) || 0;
             const deg = { transform: `rotate(${daily.wind.deg}deg)` };
             return (
-              <div
-                key={index}
-                className="table-row  odd:bg-transparent even:bg-cyan-500"
-              >
-                <div className="table-cell ">
+              <div key={index} className="table-row  bg-sky-700">
+                <div className="table-cell pl-1">
                   {formatTimestampToHour(daily.dt)}
                 </div>
-                <div className="table-cell ">
+                <div className="table-cell pl-2">
                   <IconWeather name={icon} className="h-8" />
                 </div>
-                <div className="table-cell">{Math.round(daily.main.temp)}°</div>
-                <div className="table-cell">{rain}mm</div>
-                <div className="table-cell">
+                <div className="table-cell pl-1">
+                  {Math.round(daily.main.temp)}°
+                </div>
+                <div className="table-cell pl-1">{rain}mm</div>
+                <div className="table-cell pl-1">
                   <div className="flex">
                     <div style={deg}>
                       <ArrowDown02Icon strokeWidth={1.5} size={20} />

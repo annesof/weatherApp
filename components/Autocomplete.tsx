@@ -1,3 +1,4 @@
+"use client";
 import {
   Autocomplete as AutocompleteBase,
   AutocompleteItem,
@@ -6,7 +7,7 @@ import {
 import { Search01Icon } from "hugeicons-react";
 
 interface AutocompleteProps {
-  items: any[];
+  items: { label: string; id: string }[];
   isLoading: boolean;
   onSelectionChange: ((key: any) => void) | undefined;
   onInputChange: ((value: string) => void) | undefined;
