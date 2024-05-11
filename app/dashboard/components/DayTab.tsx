@@ -133,7 +133,7 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
       </div>
       <div className="table w-full md:hidden mt-6 ">
         <div className="table-header-group ">
-          <div className="table-row bg-sky-900">
+          <div className="table-row bg-sky-800">
             <div className="table-cell font-semibold text-left pl-1">Heure</div>
             <div className="table-cell font-semibold text-center "></div>
             <div className="table-cell font-semibold text-left pl-1">Temp</div>
@@ -151,12 +151,12 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
               (daily?.rain && Math.round(daily?.rain["3h"] * 10) / 10) || 0;
             const deg = { transform: `rotate(${daily.wind.deg}deg)` };
             return (
-              <div key={index} className="table-row  bg-sky-700">
+              <div key={index} className="table-row  even:bg-sky-500">
                 <div className="table-cell pl-1">
                   {formatTimestampToHour(daily.dt)}
                 </div>
-                <div className="table-cell pl-2">
-                  <IconWeather name={icon} className="h-8" />
+                <div className="table-cell pl-2 align-bottom">
+                  <IconWeather name={icon} className="h-8" id={daily.dt + ""} />
                 </div>
                 <div className="table-cell pl-1">
                   {Math.round(daily.main.temp)}°
