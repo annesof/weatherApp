@@ -160,7 +160,11 @@ export const DayTab = ({ data, sunData, current = false }: DayTabProps) => {
                   {formatTimestampToHour(daily.dt)}
                 </div>
                 <div className="table-cell pl-2 align-bottom">
-                  <IconWeather name={icon} className="h-8" id={daily.dt + ""} />
+                  <IconWeather
+                    name={icon}
+                    className="h-8"
+                    id={daily.dt + "_small"}
+                  />
                 </div>
                 <div className="table-cell pl-1">
                   {Math.round(daily.main.temp)}°
