@@ -11,7 +11,7 @@ export const CurrentWeather = ({ dayData }: CurrentWeatherProps) => {
   return (
     <div className="w-full inline-grid grid-cols-2   justify-start gap-5  items-center md:mr-20 ">
       <div className="flex flex-col items-center">
-        <IconWeather name={icon} className="w-20 md:min-w-24" />
+        <IconWeather name={icon} className="w-20 md:min-w-24" id="principal" />
         <div className="text-l relative -top-2">
           {dayData.weather[0].description}
         </div>
