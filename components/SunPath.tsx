@@ -71,5 +71,3 @@ export const SunPath = ({ sunrise, sunset, currentDate }: SunPathProps) => {
     </svg>
   );
 };
-
-export default SunPath;

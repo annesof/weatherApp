@@ -18,7 +18,7 @@ import {
 } from "@/types";
 import { formatTimestampToDate } from "@/utils/date-utils";
 import { CircularProgress, Tab, Tabs } from "@nextui-org/react";
-import { DayTab } from "./DayTab";
+import { DayAll } from "./DayAll";
 import { LocationHeader } from "./LocationHeader";
 
 export const DashboardContainer = () => {
@@ -166,7 +166,7 @@ export const DashboardContainer = () => {
           >
             <Tab key="today" title="Aujourd'hui">
               {dailyData && (
-                <DayTab
+                <DayAll
                   data={dailyData.list[Object.keys(dailyData.list)[0]]}
                   current
                   sunData={{
@@ -181,14 +181,14 @@ export const DashboardContainer = () => {
             </Tab>
             <Tab key="tomorrow" title="Demain">
               {dailyData && (
-                <DayTab data={dailyData.list[Object.keys(dailyData.list)[1]]} />
+                <DayAll data={dailyData.list[Object.keys(dailyData.list)[1]]} />
               )}
             </Tab>
             <Tab key="5days" title="Prévisions 5 jours">
               <div className="flex flex-col 2xl:inline-grid 2xl:grid-cols-2   gap-3">
                 {dailyData &&
                   Object.keys(dailyData?.list).map((key: string) => (
-                    <DayTab key={key} data={dailyData.list[key]} />
+                    <DayAll key={key} data={dailyData.list[key]} />
                   ))}
               </div>
             </Tab>
