@@ -7,7 +7,7 @@ interface SunPathProps {
   currentDate: number;
 }
 
-const SunPath: React.FC<SunPathProps> = ({ sunrise, sunset, currentDate }) => {
+export const SunPath = ({ sunrise, sunset, currentDate }: SunPathProps) => {
   const sunriseDate = new Date(sunrise);
   const sunsetDate = new Date(sunset);
   const current = new Date(currentDate);

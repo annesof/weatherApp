@@ -1,5 +1,5 @@
 import { IconWeather, iconTypes } from "@/components/IconWeather";
-import { DailyData } from "./DashboardContainer";
+import { DailyData } from "@/types";
 import { SimpleWidget } from "./SimpleWidget";
 
 interface CurrentWeatherProps {
@@ -9,10 +9,10 @@ interface CurrentWeatherProps {
 export const CurrentWeather = ({ dayData }: CurrentWeatherProps) => {
   const icon = `icon${dayData.weather[0].icon}` as keyof typeof iconTypes;
   return (
-    <div className="w-full inline-grid grid-cols-2  md:grid-cols-6 justify-start gap-2 md:gap-10 items-center  ">
+    <div className="w-full inline-grid grid-cols-2   justify-start gap-5  items-center md:mr-20 ">
       <div className="flex flex-col items-center">
         <IconWeather name={icon} className="w-20 md:min-w-24" />
-        <div className=" text-l relative -top-4">
+        <div className="text-l relative -top-2">
           {dayData.weather[0].description}
         </div>
       </div>
@@ -29,11 +29,7 @@ export const CurrentWeather = ({ dayData }: CurrentWeatherProps) => {
       </div>
       <SimpleWidget label="Humidité" value={dayData?.main.humidity} unit="%" />
       <SimpleWidget label="Nébulosité" value={dayData?.clouds.all} unit="%" />
-      <SimpleWidget
-        label="Précipitations"
-        value={dayData?.pop * 100}
-        unit="%"
-      />
+      <SimpleWidget label="Précipitation" value={dayData?.pop * 100} unit="%" />
       <SimpleWidget
         label="Visibilité"
         value={dayData?.visibility / 1000}

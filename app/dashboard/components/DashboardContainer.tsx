@@ -6,109 +6,34 @@ import { getReverseGeocodingData } from "@/actions/getReverseGeocoding";
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
+import { Autocomplete } from "@/components/Autocomplete";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import {
+  Coordinate,
+  DailyData,
+  Feature,
+  Location,
+  WeatherDisplay,
+  WeatherResponse,
+} from "@/types";
 import { formatTimestampToDate } from "@/utils/date-utils";
-import { Tab, Tabs } from "@nextui-org/react";
-import { Autocomplete } from "../../../components/Autocomplete";
+import { CircularProgress, Tab, Tabs } from "@nextui-org/react";
 import { DayTab } from "./DayTab";
 import { LocationHeader } from "./LocationHeader";
-
-interface Feature {
-  geometry: {
-    type: string;
-    coordinates: number[];
-  };
-  properties: {
-    id: string;
-    confidence: string;
-    match_type: string;
-    country: string;
-    macroregion: string;
-    region: string;
-    locality: string;
-    label: string;
-  };
-}
-
-export interface DailyData {
-  dt: number;
-  pop: number;
-  main: {
-    temp: number;
-    feels_like: number;
-    temp_min: number;
-    temp_max: number;
-    pressure: number;
-    sea_level: number;
-    grnd_level: number;
-    humidity: number;
-  };
-  weather: { id: number; main: string; description: string; icon: string }[];
-  clouds: {
-    all: number;
-  };
-  wind: {
-    speed: number;
-    deg: number;
-  };
-  rain: {
-    "3h": number;
-  };
-  snow: {
-    "3h": number;
-  };
-  visibility: number;
-}
-
-interface WeatherResponse {
-  list: DailyData[];
-  city: {
-    sunrise: number;
-    sunset: number;
-    name: string;
-    timezone: number;
-  };
-}
-
-interface WeatherDisplay {
-  list: { [day: string]: DailyData[] };
-  city: {
-    sunrise: number;
-    sunset: number;
-    name: string;
-    timezone: number;
-  };
-}
-
-interface Location {
-  name?: string;
-  lon: string;
-  lat: string;
-}
 
 export const DashboardContainer = () => {
   const [text, setText] = useState<string>();
   const [geolocalisations, setGeolocalisations] = useState<Feature[]>([]);
   const [value] = useDebounce(text, 500);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingGeoLoc, setIsLoadingGeoloc] = useState(true);
   const [dailyData, setDailyData] = useState<WeatherDisplay>();
   const [selectedLocation, setSelectedLocation] = useState<Location>();
   const [first, setfirst] = useState(true);
   const { location } = useGeolocation();
 
-  /*if (location && first) {
-    setSelectedLocation(location);
-    setfirst(false);
-  }*/
-
   useEffect(() => {
-    async function fetchReverseGeocodingData({
-      lat,
-      lon,
-    }: {
-      lat: string;
-      lon: string;
-    }) {
+    async function fetchReverseGeocodingData({ lat, lon }: Coordinate) {
       const result = await getReverseGeocodingData({ lat, lon });
       const locationCompleted: Location = {
         lat,
@@ -120,6 +45,7 @@ export const DashboardContainer = () => {
           ", " +
           result.features[0].properties.country,
       };
+      setIsLoadingGeoloc(false);
       setSelectedLocation(locationCompleted);
     }
 
@@ -128,6 +54,7 @@ export const DashboardContainer = () => {
         lon: location.lon,
         lat: location.lat,
       });
+      setfirst(true);
     }
   }, [location, first]);
 
@@ -162,13 +89,7 @@ export const DashboardContainer = () => {
   );
 
   useEffect(() => {
-    async function fetchWeatherForecast({
-      lat,
-      lon,
-    }: {
-      lat: string;
-      lon: string;
-    }) {
+    async function fetchWeatherForecast({ lat, lon }: Coordinate) {
       const result: WeatherResponse = await getDailyForecastData({
         lat,
         lon,
@@ -210,6 +131,17 @@ export const DashboardContainer = () => {
           onInputChange={(event) => setText(event)}
         />
       </div>
+
+      {isLoadingGeoLoc && (
+        <>
+          Recherche de votre position ...
+          <CircularProgress
+            size="lg"
+            color="secondary"
+            aria-label="Loading..."
+          />
+        </>
+      )}
 
       {dailyData && (
         <>
@@ -253,7 +185,7 @@ export const DashboardContainer = () => {
               )}
             </Tab>
             <Tab key="5days" title="Prévisions 5 jours">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col 2xl:inline-grid 2xl:grid-cols-2   gap-3">
                 {dailyData &&
                   Object.keys(dailyData?.list).map((key: string) => (
                     <DayTab key={key} data={dailyData.list[key]} />
