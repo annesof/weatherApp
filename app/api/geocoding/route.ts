@@ -6,7 +6,10 @@ export async function GET(request: Request) {
   const text = searchParams.get("text");
 
   if (!text) {
-    return Response.json({ message: "Missing text param" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Missing text param" },
+      { status: 400 }
+    );
   }
 
   const res = await fetch(
