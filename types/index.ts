@@ -19,10 +19,10 @@ export interface DailyData {
     speed: number;
     deg: number;
   };
-  rain: {
+  rain?: {
     "3h": number;
   };
-  snow: {
+  snow?: {
     "3h": number;
   };
   visibility: number;

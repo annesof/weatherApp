@@ -10,13 +10,12 @@ import { Autocomplete } from "@/components/Autocomplete";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import {
   Coordinate,
-  DailyData,
   Feature,
   Location,
   WeatherDisplay,
   WeatherResponse,
 } from "@/types";
-import { formatTimestampToDate } from "@/utils/date-utils";
+import { formatWeatherData } from "@/utils/formatWeather";
 import { CircularProgress, Tab, Tabs } from "@nextui-org/react";
 import { DayAll } from "./DayAll";
 import { LocationHeader } from "./LocationHeader";
@@ -94,20 +93,7 @@ export const DashboardContainer = () => {
         lat,
         lon,
       });
-
-      const forecasts: { [day: string]: DailyData[] } = result.list.reduce<{
-        [day: string]: DailyData[];
-      }>((acc, data) => {
-        const unixTime = data.dt + result.city.timezone;
-        const timestamp = unixTime * 1000;
-        const dayOfWeek: string = formatTimestampToDate(timestamp);
-        const dataFormatted = { ...data, dt: timestamp };
-        if (!acc[dayOfWeek]) {
-          acc[dayOfWeek] = [];
-        }
-        acc[dayOfWeek].push(dataFormatted);
-        return acc;
-      }, {});
+      const forecasts = formatWeatherData(result);
       const display: WeatherDisplay = { ...result, list: forecasts };
       setDailyData(display);
     }
