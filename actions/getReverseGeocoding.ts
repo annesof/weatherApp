@@ -11,9 +11,7 @@ export const getReverseGeocodingData = async ({
     `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/reverse-geocoding?lon=${lon}&lat=${lat}`,
     { cache: "no-store" }
   );
-  console.log(data);
   if (!data.ok) {
-    console.log(data);
     throw new Error("Failed to fetch data");
   }
 

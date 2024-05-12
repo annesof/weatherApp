@@ -10,7 +10,7 @@ export const DayWind = ({ data }: DayWindProps) => {
   return (
     <div className="flex flex-col mt-2">
       <div className="text-l pb-2 flex items-center gap-1">
-        <FastWindIcon strokeWidth={1.8} size={20} />
+        <FastWindIcon strokeWidth={1.8} size={20} fill="white" />
         Vent
       </div>
       <div className="flex gap-3">

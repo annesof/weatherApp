@@ -1,12 +1,14 @@
 import { fontSans } from "@/styles/fonts";
 import "@/styles/globals.css";
+import { Link } from "@nextui-org/react";
 import clsx from "clsx";
+import { Github01Icon, Linkedin02Icon } from "hugeicons-react";
 import { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    default: "",
+    default: "Meteo",
     template: `%s - `,
   },
   description: "",
@@ -38,6 +40,17 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen">
+            <div className="w-full flex justify-end pr-5 pt-2 gap-2">
+              <Link isExternal href="https://github.com/annesof/weatherApp">
+                <Github01Icon fill="white" />
+              </Link>
+              <Link
+                isExternal
+                href="https://www.linkedin.com/in/anne-sophie-evenot-deguelle-2298b5a2/"
+              >
+                <Linkedin02Icon fill="white" />
+              </Link>
+            </div>
             <main className="container mx-auto px-2 md:px-6 flex-grow">
               {children}
             </main>

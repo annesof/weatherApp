@@ -15,7 +15,7 @@ export const DayRain = ({ data }: DayRainProps) => {
   return (
     <div className="flex flex-col mt-2">
       <div className="text-l pb-2 flex items-center gap-1">
-        <DropletIcon strokeWidth={1.8} size={17} />
+        <DropletIcon strokeWidth={1.8} size={17} fill="white" />
         Précipitations
       </div>
       <div className="flex gap-3">

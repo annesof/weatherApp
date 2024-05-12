@@ -11,7 +11,7 @@ export const DayTemperature = ({ data }: DayTemperatureProps) => {
   return (
     <div className="flex flex-col mt-2 ">
       <div className="text-l pb-2 flex items-center">
-        <TemperatureIcon strokeWidth={1.8} size={20} />
+        <TemperatureIcon strokeWidth={1.8} size={20} fill="white" />
         Températures
       </div>
       <div className="flex gap-3">

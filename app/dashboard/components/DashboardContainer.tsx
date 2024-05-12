@@ -162,7 +162,7 @@ export const DashboardContainer = () => {
               tabContent:
                 "group-data-[selected=true]:text-[#000000]  text-l text-[#FFFFFF]",
             }}
-            aria-label="Tabs variants"
+            aria-label="Onglets"
           >
             <Tab key="today" title="Aujourd'hui">
               {dailyData && (
