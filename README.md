@@ -1,5 +1,8 @@
 # Weather app
 
+- user geolocalisation
+- responsive application
+
 ### Demo
 
 [Available here](https://weather-93ms37we3-annesofs-projects.vercel.app/dashboard)
@@ -20,7 +23,7 @@
 
 ### Install dependencies
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+You can use one of them `npm`, `yarn`, Example using `npm`:
 
 ```bash
 npm install
