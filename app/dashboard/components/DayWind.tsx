@@ -15,14 +15,15 @@ export const DayWind = ({ data }: DayWindProps) => {
       </div>
       <div className="flex gap-3">
         {data.map((daily: DailyData, index: number) => {
-          const deg = { transform: `rotate(${daily.wind.deg}deg)` };
+          const { wind, dt } = daily;
+          const deg = { transform: `rotate(${wind.deg}deg)` };
           return (
             <div
               key={index}
               className="flex flex-col items-center justify-between rounded-2xl p-1 bg-[#172554]/30 min-w-[72px] min-h-28"
             >
               <div className="font-semibold text-l">
-                {formatTimestampToHour(daily.dt)}
+                {formatTimestampToHour(dt)}
               </div>
               <div className="flex-grow  content-center">
                 <div style={deg}>
@@ -30,7 +31,7 @@ export const DayWind = ({ data }: DayWindProps) => {
                 </div>
               </div>
               <div className="font-semibold text-l">
-                {Math.round(daily.wind.speed * 3.6)}km/h
+                {Math.round(wind.speed * 3.6)}km/h
               </div>
             </div>
           );

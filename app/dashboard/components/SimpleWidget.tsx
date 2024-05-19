@@ -1,13 +1,12 @@
 import { CircularProgress } from "@nextui-org/react";
-export const SimpleWidget = ({
-  label,
-  value,
-  unit,
-}: {
+
+interface SimpleWidgetProps {
   label: string;
   value: number;
-  unit: string;
-}) => {
+  unit: "km" | "%";
+}
+
+export const SimpleWidget = ({ label, value, unit }: SimpleWidgetProps) => {
   const isKm = unit === "km";
   const unitFormat = isKm
     ? { style: "unit", unit: "kilometer" }

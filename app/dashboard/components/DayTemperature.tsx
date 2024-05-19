@@ -16,19 +16,19 @@ export const DayTemperature = ({ data }: DayTemperatureProps) => {
       </div>
       <div className="flex gap-3">
         {data.map((daily: DailyData, index: number) => {
-          const icon =
-            `icon${daily?.weather[0].icon}` as keyof typeof iconTypes;
+          const { weather, dt, main } = daily;
+          const icon = `icon${weather[0].icon}` as keyof typeof iconTypes;
           return (
             <div
               key={index}
               className="flex flex-col items-center rounded-2xl p-1 bg-[#172554]/30"
             >
               <div className="font-semibold text-l">
-                {formatTimestampToHour(daily.dt)}
+                {formatTimestampToHour(dt)}
               </div>
-              <IconWeather name={icon} className="w-16" id={daily.dt + ""} />
+              <IconWeather name={icon} className="w-16" id={`${dt}`} />
               <div className="font-semibold text-l">
-                {Math.round(daily.main.temp)}°
+                {Math.round(main.temp)}°
               </div>
             </div>
           );

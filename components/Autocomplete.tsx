@@ -62,7 +62,6 @@ export const Autocomplete = ({
           ],
         },
       }}
-      onKeyDown={(e: any) => e.continuePropagation()}
       onInputChange={onInputChange}
     >
       {(item) => (

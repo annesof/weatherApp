@@ -34,15 +34,11 @@ export const DashboardContainer = () => {
   useEffect(() => {
     async function fetchReverseGeocodingData({ lat, lon }: Coordinate) {
       const result = await getReverseGeocodingData({ lat, lon });
+      const firstResult = result.features[0].properties;
       const locationCompleted: Location = {
         lat,
         lon,
-        name:
-          result.features[0].properties.name +
-          ", " +
-          result.features[0].properties.locality +
-          ", " +
-          result.features[0].properties.country,
+        name: `${firstResult.name}, ${firstResult.locality}, ${firstResult.country}`,
       };
       setIsLoadingGeoloc(false);
       setSelectedLocation(locationCompleted);
@@ -60,9 +56,14 @@ export const DashboardContainer = () => {
   useEffect(() => {
     async function fetchGeocodingData(text: string) {
       setIsLoading(true);
-      const result = await getGeocodingData({ text });
-      setGeolocalisations(result.features);
-      setIsLoading(false);
+      try {
+        const result = await getGeocodingData({ text });
+        setGeolocalisations(result.features);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
     if (typedLocation) {
       fetchGeocodingData(typedLocation);
@@ -76,9 +77,12 @@ export const DashboardContainer = () => {
       );
       setDailyData(undefined);
       if (chosenLocation) {
+        const {
+          coordinates: [lon, lat],
+        } = chosenLocation?.geometry;
         const locationCoordinates = {
-          lon: `${chosenLocation?.geometry.coordinates[0]}`,
-          lat: `${chosenLocation?.geometry.coordinates[1]}`,
+          lon: `${lon}`,
+          lat: `${lat}`,
           name: chosenLocation.properties.label,
         };
         setSelectedLocation(locationCoordinates);

@@ -20,23 +20,24 @@ export const DayRain = ({ data }: DayRainProps) => {
       </div>
       <div className="flex gap-3">
         {data.map((daily: DailyData, index: number) => {
-          const rain =
-            (daily?.rain && Math.round(daily?.rain["3h"] * 10) / 10) || 0;
+          const { rain, dt } = daily;
+          const rainTransformed =
+            (rain && Math.round(rain["3h"] * 10) / 10) || 0;
           return (
             <div
               key={index}
               className="flex flex-col items-center justify-between rounded-2xl p-1 bg-[#172554]/30 min-w-[72px] min-h-32"
             >
               <div className="font-semibold text-l">
-                {formatTimestampToHour(daily.dt)}
+                {formatTimestampToHour(dt)}
               </div>
               <div className="flex-grow  content-end">
                 <div
                   className=" w-3 bg-[#B4D4F2] rounded-xl max-h-24"
-                  style={{ height: calculateHeight(rain) }}
+                  style={{ height: calculateHeight(rainTransformed) }}
                 ></div>
               </div>
-              <div className="font-semibold text-l">{rain} mm</div>
+              <div className="font-semibold text-l">{rainTransformed} mm</div>
             </div>
           );
         })}

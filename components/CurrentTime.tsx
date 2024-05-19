@@ -15,19 +15,18 @@ export const CurrentTime = ({ timezone }: { timezone: number }) => {
     return () => clearInterval(intervalId);
   }, [timezone]);
 
+  const time = new Date(currentTime);
+  const hours = time.getUTCHours().toString().padStart(2, "0");
+  const minutes = time.getUTCMinutes().toString().padStart(2, "0");
+  const seconds = time.getUTCSeconds().toString().padStart(2, "0");
+
   return (
     <div className="flex rounded-lg bg-gradient-to-br from-sky-900 to-sky-600 p-1 gap-1">
-      <div>
-        {new Date(currentTime).getUTCHours().toString().padStart(2, "0")}
-      </div>
+      <div>{hours}</div>
       <div>:</div>
-      <div>
-        {new Date(currentTime).getUTCMinutes().toString().padStart(2, "0")}
-      </div>
+      <div>{minutes}</div>
       <div>:</div>
-      <div>
-        {new Date(currentTime).getUTCSeconds().toString().padStart(2, "0")}
-      </div>
+      <div>{seconds}</div>
     </div>
   );
 };

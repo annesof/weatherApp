@@ -15,11 +15,12 @@ interface DayTabProps {
 }
 
 export const DayAll = ({ data, sunData, current = false }: DayTabProps) => {
+  const currentDayData = data[0];
   return (
     <div className="bg-[#2B93F3] rounded-2xl w-full p-4 md:p-8">
       <div className="flex w-full justify-between gap-20">
         <div className="text-xl md:text-2xl font-bold content-center">
-          {capitalizeFirstLetter(formatTimestampToDate(data[0].dt))}
+          {capitalizeFirstLetter(formatTimestampToDate(currentDayData.dt))}
         </div>
         {sunData && (
           <div className="hidden md:block">
@@ -32,7 +33,7 @@ export const DayAll = ({ data, sunData, current = false }: DayTabProps) => {
         )}
       </div>
       <div className="md:inline-grid md:grid-cols-2 md:gap-24">
-        {current && <CurrentWeather dayData={data[0]} />}
+        {current && <CurrentWeather dayData={currentDayData} />}
         <div className="hidden md:block">
           <DayTemperature data={data} />
           <DayRain data={data} />
