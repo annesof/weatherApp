@@ -23,7 +23,7 @@ import { LocationHeader } from "./LocationHeader";
 export const DashboardContainer = () => {
   const [text, setText] = useState<string>();
   const [geolocalisations, setGeolocalisations] = useState<Feature[]>([]);
-  const [value] = useDebounce(text, 500);
+  const [typedLocation] = useDebounce(text, 500);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingGeoLoc, setIsLoadingGeoloc] = useState(true);
   const [dailyData, setDailyData] = useState<WeatherDisplay>();
@@ -53,7 +53,7 @@ export const DashboardContainer = () => {
         lon: location.lon,
         lat: location.lat,
       });
-      setfirst(true);
+      setfirst(false);
     }
   }, [location, first]);
 
@@ -64,10 +64,10 @@ export const DashboardContainer = () => {
       setGeolocalisations(result.features);
       setIsLoading(false);
     }
-    if (value) {
-      fetchGeocodingData(value);
+    if (typedLocation) {
+      fetchGeocodingData(typedLocation);
     }
-  }, [value]);
+  }, [typedLocation]);
 
   const onSelectionChange = useCallback(
     (id: any) => {

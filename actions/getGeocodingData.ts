@@ -1,13 +1,20 @@
 "use server";
+import { NextResponse } from "next/server";
 
 export const getGeocodingData = async ({ text }: { text: string }) => {
+  if (!text) {
+    return NextResponse.json(
+      { message: "Missing text param" },
+      { status: 400 }
+    );
+  }
+
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/geocoding?text=${text}`,
-    { cache: "no-store" }
+    `http://pelias.smappen.com:4000/v1/search?text=${text}`
   );
 
   if (!data.ok) {
-    throw new Error("Failed to fetch data");
+    throw new Error("Failed to fetch geocoding data");
   }
 
   return data.json();
